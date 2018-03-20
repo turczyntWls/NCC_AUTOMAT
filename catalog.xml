@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="file:/C:/TOOL_PROJECTS/NCC_ADD_WO/newXMLDocument.xml" uri="xml-resources/jaxb/binding/newXMLDocument.xml"/>
+    <system systemId="file:/C:/TOOL_PROJECTS/NCC_ADD_WO/newXMLDocumentDTD.dtd" uri="xml-resources/jaxb/abcd/newXMLDocumentDTD.dtd"/>
+    <system systemId="file:/C:/TOOL_PROJECTS/NCC_ADD_WO/src/ncc_add_wo/newXMLDocument2.xml" uri="xml-resources/jaxb/weqw/newXMLDocument2.xml"/>
+</catalog>
