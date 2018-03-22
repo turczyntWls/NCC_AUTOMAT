@@ -120,11 +120,13 @@ public class WoExecutor {
         this.atmo.reportTaskFinished(addWoToAtmo,comment, false);
         logger.log(Level.INFO, "[ROOT]\t-  WO: Close(woId="+ addWoToAtmo+")");
     }
+    
     public void doCancel(String comment) throws JAXBException
     {
         this.atmo.doCancel(addWoToAtmo,comment, false);
         logger.log(Level.INFO, "[ROOT]\t-  WO: Cancel(woId="+ addWoToAtmo+")");
     }
+    
     private NewFile createMmlFile() {
         String  DATE_FORMAT_NOW = "yyyy_MM_dd";
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(DATE_FORMAT_NOW);
@@ -166,6 +168,8 @@ public class WoExecutor {
                     tmp.add("BSC \\ " + mml.getNeName());
                 }
             }
+            if(mml.getExtraDependElement()!=null&&!mml.getExtraDependElement().isEmpty())
+                tmp.add(mml.getExtraDependElement());
         }
         return tmp;
 

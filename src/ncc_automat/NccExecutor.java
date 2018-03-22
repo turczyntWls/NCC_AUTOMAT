@@ -125,6 +125,7 @@ public class NccExecutor
                                 .setM2000(sqlOdp.getValue("M2000_Ip", r))
                                 .setNeName(sqlOdp.getValue("NE_NAME", r))
                                 .setSqlUpdateQuery(sqlOdp.getValue("UpdateQuery", r))
+                                .setExtraDependElement(sqlOdp.getValue("extraDependElement", r))
                                 .setBreakAfterFirstError(mmlq.isBreakAfterFirstError())
                                 .createMMLCommand();
                         this.mmlToExecute.add(mml);

@@ -15,7 +15,8 @@ public class MMLCommand
     private String sqlExceptionInfo;
     private String retcodeLine;
     static String SUCCEED_RETCODE_PATTERN = "RETCODE = 0";
-
+    private String extraDependElement;
+    
     public MMLCommand(MMLCommandBuilder builder) 
     {
         this.m2000 = builder.m2000;
@@ -23,12 +24,23 @@ public class MMLCommand
         this.command = builder.command;
         this.sqlUpdateQuery = builder.sqlUpdateQuery;
         this.breakAfterFirstError=builder.breakAfterFirstError;
+        this.extraDependElement=builder.extraDependElement;
         regNeAns = null;
         executeCommAns = null;
         northSucced = false;
         sqlUpdated = false;
     }
 
+    public String getExtraDependElement() {
+        return extraDependElement;
+    }
+
+    public void setExtraDependElement(String extraDependElement) {
+        this.extraDependElement = extraDependElement;
+    }
+
+    
+    
     public String getM2000()
     {
         return m2000;
@@ -137,6 +149,7 @@ public class MMLCommand
         private String command;
         private String sqlUpdateQuery;
         private boolean breakAfterFirstError;
+        private String extraDependElement;
 
         public MMLCommandBuilder() 
         {
@@ -169,6 +182,11 @@ public class MMLCommand
         public MMLCommandBuilder setBreakAfterFirstError(boolean breakAfterFirstError )
         {
             this.breakAfterFirstError=breakAfterFirstError;
+            return this;
+        }
+        public MMLCommandBuilder setExtraDependElement(String extraDependElement)
+        {
+            this.extraDependElement=extraDependElement;
             return this;
         }
 
