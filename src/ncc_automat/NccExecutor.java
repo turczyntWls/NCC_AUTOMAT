@@ -19,43 +19,41 @@ import nbipackage.NBIAnsException;
 import xm2java.MmlQueryEntity;
 import xm2java.NccEntity;
 
-public class NccExecutor {
+public class NccExecutor
+{
 
     private NccEntity nccEntity;
     private final mysqlpackage.DataSource DOA;
     private Connection connection = null;
     private Statement testStatement = null;
-
     private java.util.List<MMLCommand> mmlToExecute;
     private Logger logger;
-
     private int poprawnie;
     private int blednie;
-
     private String northLogin;
     private String northPassword;
-    
-    public NccExecutor(NccEntity nccEntity, DataSource DOA, Logger logger,String northLogin,String northPassword) throws SQLException, Exception 
+
+    public NccExecutor(NccEntity nccEntity, DataSource DOA, Logger logger, String northLogin, String northPassword) throws SQLException, Exception
     {
         this.nccEntity = nccEntity;
         this.DOA = DOA;
         this.logger = logger;
-        this.northLogin=northLogin;
-        this.northPassword=northPassword;
+        this.northLogin = northLogin;
+        this.northPassword = northPassword;
         poprawnie = -1;
         blednie = -1;
     }
 
-    public void execute() throws Exception 
+    public void execute() throws Exception
     {
         logger.info("[" + this.nccEntity.getName() + "]\t-  START: ");
-        try 
+        try
         {
             init();
             handleBeforeQuerys();
             prepareMmlToExecuteList();
-            this.nccEntity.setCountedProblemBefore(getInconsistencyNumber());            
-            if (this.nccEntity.isMmlExecutable()) 
+            this.nccEntity.setCountedProblemBefore(getInconsistencyNumber());
+            if (this.nccEntity.isMmlExecutable())
                 handleMmlExecution();
             handleAfterQuerys();
             if (this.nccEntity.isCountAfterUpdate())
@@ -63,26 +61,34 @@ public class NccExecutor {
             else
                 this.nccEntity.setCountedProblemAfter("--");
             logger.info("[" + this.nccEntity.getName() + "]\t-  END: ");
-        } catch (Exception e) {
-           logger.throwing(this.nccEntity.getName(), null, e);
-        } finally {
+        }
+        catch (SQLException | NBIAnsException e)
+        {
+            logger.throwing(this.nccEntity.getName(), null, e);
+        }
+        finally
+        {
             close();
         }
     }
 
-    private void init() throws SQLException {
+    private void init() throws SQLException
+    {
         connection = DOA.getConnection();
         testStatement = connection.createStatement();
     }
-    private void handleBeforeQuerys() throws SQLException {
+
+    private void handleBeforeQuerys() throws SQLException
+    {
         List<String> beforeQuerys = this.nccEntity.getBeforeQuerys();
-        if (beforeQuerys != null) 
+        if (beforeQuerys != null)
         {
             logger.info("[" + this.nccEntity.getName() + "]\t-  BEFOREQUERY: start ");
-            for (String query : beforeQuerys) {
+            for (String query : beforeQuerys)
+            {
 
                 logger.log(Level.ALL, "[" + this.nccEntity.getName() + "]\t-  BEFOREQUERY: query:" + query);
-                if (!query.isEmpty()) 
+                if (!query.isEmpty())
                 {
                     boolean execute = testStatement.execute(query);
                     //OdpowiedzSQL sqlOdp = Baza.createAnswer(res);
@@ -90,18 +96,20 @@ public class NccExecutor {
                 }
             }
             logger.info("[" + this.nccEntity.getName() + "]\t-  BEFOREQUERY: end, " + beforeQuerys.size() + " query's executed");
-        } 
+        }
         else
             logger.info("[" + this.nccEntity.getName() + "]\t-  BEFOREQUERY: empty");
     }
-    private void prepareMmlToExecuteList() throws SQLException  {
+
+    private void prepareMmlToExecuteList() throws SQLException
+    {
         logger.info("[" + this.nccEntity.getName() + "]\t-  MMLQUERYS: start");
-        this.mmlToExecute=new java.util.LinkedList<MMLCommand>();
+        this.mmlToExecute = new java.util.LinkedList<MMLCommand>();
 
         List<MmlQueryEntity> mmlsQuery = this.nccEntity.getMmlQueryList();
-        if (mmlsQuery != null) 
+        if (mmlsQuery != null)
         {
-            for (MmlQueryEntity mmlq : mmlsQuery) 
+            for (MmlQueryEntity mmlq : mmlsQuery)
             {
                 String sqlQuery = mmlq.getQuery();
                 logger.log(Level.ALL, "[" + this.nccEntity.getName() + "]\t-  MMLQUERYS: query=" + sqlQuery);
@@ -109,7 +117,7 @@ public class NccExecutor {
                 {
                     ResultSet res = testStatement.executeQuery(sqlQuery);
                     OdpowiedzSQL sqlOdp = Baza.createAnswer(res);
-                    for (int r = 0; r < sqlOdp.rowCount(); r++) 
+                    for (int r = 0; r < sqlOdp.rowCount(); r++)
                     {
                         MMLCommand mml = new ncc_automat.MMLCommand.MMLCommandBuilder()
                                 .setCommand(sqlOdp.getValue("Command", r))
@@ -124,11 +132,14 @@ public class NccExecutor {
                 }
             }
             logger.log(Level.INFO, "[" + this.nccEntity.getName() + "]\t-  MMLQUERYS: end, " + this.mmlToExecute.size() + " mml's prepared");
-        }else
+        }
+        else
             logger.log(Level.INFO, "[" + this.nccEntity.getName() + "]\t-  MMLQUERYS: end, empty");
-       
+
     }
-    private String getInconsistencyNumber() throws SQLException    {
+
+    private String getInconsistencyNumber() throws SQLException
+    {
         if (!this.nccEntity.isCountMML())
         {
             if (!this.nccEntity.getCountQuery().isEmpty())
@@ -145,77 +156,102 @@ public class NccExecutor {
             return "" + this.mmlToExecute.size();
         }
     }
-    private String handleCountQuerys() throws SQLException {
+
+    private String handleCountQuerys() throws SQLException
+    {
         String countQuery = this.nccEntity.getCountQuery();
         String numbersOfProblem = null;
-        if (!countQuery.isEmpty()) 
+        if (!countQuery.isEmpty())
         {
             logger.info("[" + this.nccEntity.getName() + "]\t-  COUNTQUERY: start ");
             ResultSet res = testStatement.executeQuery(countQuery);
             logger.log(Level.ALL, "[" + this.nccEntity.getName() + "]\t-  COUNTQUERY: query:" + countQuery);
             OdpowiedzSQL sqlOdp = Baza.createAnswer(res);
-            if (sqlOdp.rowCount() > 0) 
+            if (sqlOdp.rowCount() > 0)
             {
-                if (sqlOdp.kolumnCount() > 1) 
+                if (sqlOdp.kolumnCount() > 1)
                     numbersOfProblem = sqlOdp.getValue("problems_founded", 0);
-                else                
+                else
                     numbersOfProblem = sqlOdp.getValue(0, 0);
             }
             logger.info("[" + this.nccEntity.getName() + "]\t-  COUNTQUERY: end, " + numbersOfProblem + " problems's founded");
-        }else
+        }
+        else
             logger.info("[" + this.nccEntity.getName() + "]\t-  COUNTQUERY: end, empty");
         return numbersOfProblem;
     }
-    private void handleMmlExecution() throws NBIAnsException {
-        MmlExecutor mmlexec = new ncc_automat.MmlExecutor(mmlToExecute, testStatement, logger,this.northLogin,this.northPassword);
+
+    private void handleMmlExecution() throws NBIAnsException
+    {
+        MmlExecutor mmlexec = new ncc_automat.MmlExecutor(mmlToExecute, testStatement, logger, this.northLogin, this.northPassword);
         mmlexec.setNccName(this.nccEntity.getName());
         mmlexec.execute();
         this.poprawnie = mmlexec.getExecOk();
         this.blednie = mmlexec.getProblem();
     }
-    private void handleAfterQuerys() throws SQLException {
+
+    private void handleAfterQuerys() throws SQLException
+    {
         List<String> afterQuerys = this.nccEntity.getAfterQuerys();
-        if (afterQuerys != null) {
+        if (afterQuerys != null)
+        {
             logger.info("[" + this.nccEntity.getName() + "]\t-  AFTERQUERY: start ");
-            for (String query : afterQuerys) {
+            for (String query : afterQuerys)
+            {
 
                 logger.log(Level.ALL, "[" + this.nccEntity.getName() + "]\t-  AFTERQUERY: query=" + query);
-                if (!query.isEmpty()) {
-                   boolean res = testStatement.execute(query);
-                    
+                if (!query.isEmpty())
+                {
+                    boolean res = testStatement.execute(query);
+
                     logger.log(Level.ALL, "[" + this.nccEntity.getName() + "]\t-  AFTERQUERY: succedde=" + res);
                 }
             }
             logger.info("[" + this.nccEntity.getName() + "]\t-  AFTERQUERY: end," + afterQuerys.size() + " executed");
-        } else {
+        }
+        else
+        {
             logger.log(Level.ALL, "[" + this.nccEntity.getName() + "]\t-  AFTERQUERY: end, empty");
         }
 
     }
-    private void close() throws SQLException {
+
+    private void close() throws SQLException
+    {
         testStatement.close();
         connection.close();
     }
 
-    public NccEntity getNccEntity() {
+    public NccEntity getNccEntity()
+    {
         return nccEntity;
     }
-    public void setNccEntity(NccEntity nccEntity) {
+
+    public void setNccEntity(NccEntity nccEntity)
+    {
         this.nccEntity = nccEntity;
     }
-    public List<MMLCommand> getMmlToExecute() {
+
+    public List<MMLCommand> getMmlToExecute()
+    {
         return mmlToExecute;
     }
-    public void setMmlToExecute(List<MMLCommand> mmlToExecute) {
+
+    public void setMmlToExecute(List<MMLCommand> mmlToExecute)
+    {
         this.mmlToExecute = mmlToExecute;
     }
-    public String getPoprawnie() {
+
+    public String getPoprawnie()
+    {
         if (poprawnie != -1)
             return "" + poprawnie;
         else
             return "--";
     }
-    public String getBlednie() {
+
+    public String getBlednie()
+    {
         if (blednie != -1)
             return "" + blednie;
         else
