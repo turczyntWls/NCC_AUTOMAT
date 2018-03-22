@@ -55,11 +55,12 @@ public class NccExecutor
             this.nccEntity.setCountedProblemBefore(getInconsistencyNumber());
             if (this.nccEntity.isMmlExecutable())
                 handleMmlExecution();
-            handleAfterQuerys();
+            
             if (this.nccEntity.isCountAfterUpdate())
                 this.nccEntity.setCountedProblemAfter(getInconsistencyNumber());
             else
                 this.nccEntity.setCountedProblemAfter("--");
+            handleAfterQuerys();
             logger.info("[" + this.nccEntity.getName() + "]\t-  END: ");
         }
         catch (SQLException | NBIAnsException e)
