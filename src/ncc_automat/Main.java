@@ -77,9 +77,15 @@ public class Main {
             logger.log(Level.INFO, "[ROOT]\t-  WO:add dependent network elements,succeeded=" + addDependentNetworkElements2Wo + "(woId=" + addWoToAtmo + ")");
             woExecutor.sendWoToImplementation();
             logger.log(Level.INFO, "[ROOT]\t-  WO: send to implementation(woId=" + addWoToAtmo + ")");
-            String komentarz = "test";
-            woExecutor.takeFromQueueAndClose(komentarz);
-            logger.log(Level.INFO, "[ROOT]\t-  WO: canceled(woId=" + addWoToAtmo + ")");
+            int probaft;
+            if((probaft=woExecutor.getSumaryProblemAfter())==0)
+            {
+                String komentarz = "automat";
+                woExecutor.takeFromQueueAndClose(komentarz);
+                logger.log(Level.INFO, "[ROOT]\t-  WO: close(woId=" + addWoToAtmo + ")");
+            }
+            else
+                logger.log(Level.INFO, "[ROOT]\t-  WO:SumaryProblemAfter="+probaft+", left unclosed(woId=" + addWoToAtmo + ")");
         }
         logger.log(Level.INFO, "[ROOT]\t-  WO:END(woId=" + addWoToAtmo + ")");
     }

@@ -134,7 +134,7 @@ public class NccEntity
 
     public String getCountedProblemAfter() {
         if(this.isMmlExecutable())
-        return countedProblemAfter;
+            return countedProblemAfter;
         else
             return "--";
     }

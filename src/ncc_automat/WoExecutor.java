@@ -34,6 +34,7 @@ public class WoExecutor {
         this.logger = logger;
         this.root = root;
         this.atmo = new AtmoWithAuth(root.getAtmoUserId());
+        sumaryProblemAfter=0;
     }
 
     public int addWoToAtmo() throws JAXBException {
@@ -181,6 +182,8 @@ public class WoExecutor {
         return descr.toString();
     }
 
+    private int sumaryProblemAfter;
+    
     private String prepareTableBody() {
         StringBuilder tableBody = new StringBuilder();
         tableBody.append("<html>\n"
@@ -203,10 +206,23 @@ public class WoExecutor {
 
         for (NccExecutor exec : this.nccExecLst) {
             tableBody.append(prepareTableRow(exec));
+            String countedProblemAfter = exec.getNccEntity().getCountedProblemAfter();
+            if(countedProblemAfter.matches("[0-9]+"))
+            {
+                sumaryProblemAfter+=Integer.parseInt(countedProblemAfter);
+            }
+            else if(!exec.getNccEntity().isMmlExecutable()&&exec.getNccEntity().getCountedProblemBefore().matches("[0-9]+"))
+            {
+                sumaryProblemAfter+=Integer.parseInt(exec.getNccEntity().getCountedProblemBefore());
+            }
         }
         tableBody.append("</tbody>\n")
                 .append("</table>\n");
         return tableBody.toString();
+    }
+
+    public int getSumaryProblemAfter() {
+        return sumaryProblemAfter;
     }
 
     private String prepareTableRow(NccExecutor exec) {
